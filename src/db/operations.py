@@ -119,7 +119,7 @@ def mark_missing_inactive(conn: psycopg.Connection, active_urls: set[str]):
         UPDATE activities
         SET is_active = FALSE, updated_at = NOW()
         WHERE is_active = TRUE
-          AND resource_url != ALL(%(urls)s)
+        AND resource_url != ALL(%(urls)s)
         RETURNING id
         """,
         {"urls": list(active_urls)},

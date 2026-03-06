@@ -149,12 +149,135 @@ Each **activity** record contains:
 - `embedding` — 384-dim vector for semantic search
 - `is_active` — Health check flag
 
-### What's Next
+## Part 2: Backend API
 
-**Part 2: Backend API** will add:
-- FastAPI with `/chat` and `/search` endpoints
-- Gemini conversation engine with function calling
-- Admin endpoints for triggering re-crawl and health checks
+### What it does
+
+1. **Semantic search endpoint** — `POST /api/search` wraps the pgvector similarity search as an HTTP API
+2. **Conversational assistant** — `POST /api/chat` uses Gemini with function calling to let teachers discover activities through natural conversation
+3. **Admin endpoints** — stats, health checks, and re-ingestion triggers
+
+### Quick Start (API)
+
+#### 1. Get a Gemini API key
+
+1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
+2. Create a free API key
+3. Add it to your `.env`:
+
+```bash
+GEMINI_API_KEY=your-gemini-api-key
+```
+
+#### 2. Install dependencies
+
+```bash
+pip install -e ".[dev]"
+```
+
+#### 3. Make sure the database is populated
+
+If you haven't run the data pipeline yet:
+
+```bash
+python -m src init-db
+python -m src ingest
+```
+
+#### 4. Start the API server
+
+```bash
+uvicorn src.api.app:app --host 0.0.0.0 --port 8000
+```
+
+Or with auto-reload for development:
+
+```bash
+uvicorn src.api.app:app --host 0.0.0.0 --port 8000 --reload
+```
+
+The interactive API docs are at **http://localhost:8000/docs**
+
+#### 5. Test the endpoints
+
+**Semantic search:**
+```bash
+curl -X POST http://localhost:8000/api/search \
+  -H "Content-Type: application/json" \
+  -d '{"query": "brainstorming ideas", "grade_band": "K-2"}'
+```
+
+**Chat with the assistant (requires Gemini API key):**
+```bash
+curl -X POST http://localhost:8000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "I need a brainstorming activity for K-2 students"}'
+```
+
+**Continue a conversation (use the session_id from the first response):**
+```bash
+curl -X POST http://localhost:8000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Show me something for older kids instead", "session_id": "YOUR_SESSION_ID"}'
+```
+
+**Catalog stats:**
+```bash
+curl http://localhost:8000/api/admin/stats
+```
+
+**Health check:**
+```bash
+curl http://localhost:8000/api/admin/health
+```
+
+**Trigger re-ingestion:**
+```bash
+curl -X POST http://localhost:8000/api/admin/ingest
+```
+
+### API Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `POST` | `/api/search` | Semantic search with filters | None |
+| `POST` | `/api/chat` | Conversational Gemini assistant | Gemini key |
+| `DELETE` | `/api/chat/{session_id}` | Clear chat history | None |
+| `GET` | `/api/admin/stats` | Catalog statistics | None |
+| `GET` | `/api/admin/health` | System health check | None |
+| `POST` | `/api/admin/ingest` | Trigger re-crawl + ingestion | None |
+
+### Project Structure (updated)
+
+```
+src/
+├── api/
+│   ├── __init__.py
+│   ├── app.py               # FastAPI application + CORS + routers
+│   ├── models.py            # Pydantic request/response schemas
+│   ├── chat_engine.py       # Gemini conversation engine + function calling
+│   └── routes/
+│       ├── __init__.py
+│       ├── search.py        # POST /api/search
+│       ├── chat.py          # POST /api/chat
+│       └── admin.py         # Admin endpoints (stats, health, ingest)
+├── crawler/                 # (Part 1)
+├── embeddings/              # (Part 1)
+├── db/                      # (Part 1)
+└── ...
+```
+
+### Tech Stack (Part 2)
+
+| Component | Technology |
+|-----------|-----------|
+| API Framework | FastAPI + Uvicorn |
+| Chat Engine | Google Gemini 2.0 Flash with function calling |
+| Search | pgvector cosine similarity (via Part 1) |
+| SDK | google-genai |
+| Validation | Pydantic v2 |
+
+### What's Next
 
 **Part 3: Frontend** will add:
 - React chat interface

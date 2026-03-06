@@ -30,3 +30,6 @@ EMBEDDING_DIMENSIONS = 384
 
 # Google Drive (optional service account)
 GOOGLE_SERVICE_ACCOUNT_KEY = os.getenv("GOOGLE_SERVICE_ACCOUNT_KEY", "")
+
+# Gemini API (Part 2 — chat engine)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
