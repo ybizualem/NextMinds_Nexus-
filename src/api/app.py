@@ -48,9 +48,14 @@ app.add_middleware(
 )
 
 # Register routers
-app.include_router(search_router)
-app.include_router(chat_router)
-app.include_router(admin_router)
+try:
+    app.include_router(search_router)
+    app.include_router(chat_router)
+    app.include_router(admin_router)
+    logging.info("Routers registered successfully")
+except Exception as e:
+    logging.exception("Failed to register routers")
+    raise
 
 
 @app.get("/")
