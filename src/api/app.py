@@ -22,11 +22,16 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.routes.search import router as search_router
-from src.api.routes.chat import router as chat_router
-from src.api.routes.admin import router as admin_router
-
 logging.basicConfig(level=logging.INFO)
+
+try:
+    from src.api.routes.search import router as search_router
+    from src.api.routes.chat import router as chat_router
+    from src.api.routes.admin import router as admin_router
+    logging.info("Routes imported successfully")
+except Exception as e:
+    logging.exception("Failed to import routes")
+    raise
 
 app = FastAPI(
     title="CTIC Curriculum Engine API",
