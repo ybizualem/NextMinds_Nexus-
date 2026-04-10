@@ -1,3 +1,35 @@
+[tool.poetry]
+name = "ctic-curriculum-engine"
+version = "0.1.0"
+description = "CTIC Curriculum Recommendation Engine - Data Pipeline"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+beautifulsoup4 = ">=4.12"
+requests = ">=2.31"
+psycopg = {extras = ["binary"], version = ">=3.1"}
+pgvector = ">=0.3"
+sentence-transformers = ">=3.0"
+python-dotenv = ">=1.0"
+rich = ">=13.0"
+fastapi = ">=0.115"
+uvicorn = {extras = ["standard"], version = ">=0.30"}
+google-genai = ">=1.0"
+pydantic = ">=2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.0"
+pytest-asyncio = ">=0.23"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
 [project]
 name = "ctic-curriculum-engine"
 version = "0.1.0"
@@ -22,6 +54,3 @@ dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
 ]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
