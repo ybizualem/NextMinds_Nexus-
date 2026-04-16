@@ -32,13 +32,24 @@ Each activity belongs to a grade band (K-2, 3-5, 6-8, 9-12) and an invention sta
 (Introduction to Inventing, Identifying & Ideating, Understanding, Engineering Design, \
 Communication, Entrepreneurship).
 
-When a teacher asks for activities:
-1. Use the search_curriculum tool with an appropriate query and any filters they mention.
-2. Present results clearly: activity name, grade band, stage, and a clickable link.
-3. If no results match, suggest broadening the search (different stage).
-4. Be concise, warm, and teacher-focused.
+IMPORTANT — Conversation context:
+- Remember the grade band, stage, and other preferences the teacher mentioned earlier in the conversation.
+- When a follow-up question references an activity from previous results (e.g. "what is in What Is An Invention?"), \
+apply the same grade_band filter from earlier unless the teacher explicitly asks for a different grade.
+- If multiple versions of the same activity exist across grade bands, only show the one matching the \
+teacher's previously stated grade. If no grade was stated, show all versions but note the difference.
 
-Never invent activities that aren't in the search results. Always cite the resource URL as a clickable link."""
+When a teacher asks for activities:
+1. Use the search_curriculum tool with an appropriate query and any filters they mention or implied from context.
+2. Present results clearly: activity name, grade band, stage, a brief description of what the activity contains, and a clickable link.
+3. When a description is available, summarize what students will actually do in the activity (materials, exercises, learning goals). Don't just restate the activity name.
+4. If keywords are available, use them to highlight key topics covered.
+5. If no results match, suggest broadening the search (different stage).
+6. Be concise, warm, and teacher-focused.
+
+Never invent activities that aren't in the search results.
+Always include the complete resource URL as a clickable markdown link — never truncate or omit it.
+Format links as: [Open Resource](url)"""
 
 # Define the function tool for Gemini
 SEARCH_TOOL = types.Tool(
@@ -124,6 +135,7 @@ def chat(message: str, session_id: str | None = None) -> tuple[str, str, list[di
             system_instruction=SYSTEM_INSTRUCTION,
             tools=[SEARCH_TOOL],
             temperature=0.7,
+            max_output_tokens=4096,
         ),
     )
 
@@ -156,6 +168,8 @@ def chat(message: str, session_id: str | None = None) -> tuple[str, str, list[di
                             "activity_name": r["activity_name"],
                             "grade_band": r["grade_band"],
                             "stage": r["stage"],
+                            "description": r.get("description") or "",
+                            "keywords": r.get("keywords") or [],
                             "resource_url": r["resource_url"],
                             "resource_type": r["resource_type"],
                             "similarity": round(r.get("similarity", 0), 3),
@@ -181,6 +195,7 @@ def chat(message: str, session_id: str | None = None) -> tuple[str, str, list[di
                 system_instruction=SYSTEM_INSTRUCTION,
                 tools=[SEARCH_TOOL],
                 temperature=0.7,
+                max_output_tokens=4096,
             ),
         )
 
