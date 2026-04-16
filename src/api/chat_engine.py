@@ -48,8 +48,7 @@ When a teacher asks for activities:
 6. Be concise, warm, and teacher-focused.
 
 Never invent activities that aren't in the search results.
-Always include the complete resource URL as a clickable markdown link — never truncate or omit it.
-Format links as: [Open Resource](url)"""
+Always include the complete resource URL as a plain URL on its own line — never truncate or omit it. Do not wrap it in markdown link syntax."""
 
 # Define the function tool for Gemini
 SEARCH_TOOL = types.Tool(
